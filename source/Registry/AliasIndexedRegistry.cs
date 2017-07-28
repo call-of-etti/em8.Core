@@ -29,6 +29,12 @@ namespace CoE.em8.Core.Registry
                 this.registry.Add(alias, item);
         }
 
+        public void RegisterRange(params TItem[] items)
+        {
+            foreach (var item in items)
+                this.Register(item);
+        }
+
         public bool TryGet(TAlias alias, out TItem item)
         {
             if (this.ContainsKey(alias))

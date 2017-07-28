@@ -13,6 +13,7 @@ namespace CoE.em8.Core.Registry
         bool ContainsValue(TItem item);
         TItem Get(TAlias alias);
         void Register(TItem item);
+        void RegisterRange(params TItem[] items);
         bool TryGet(TAlias alias, out TItem item);
     }
 }
