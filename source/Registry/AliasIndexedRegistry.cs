@@ -49,6 +49,11 @@ namespace CoE.em8.Core.Registry
             }
         }
 
+        public void Clear()
+        {
+            registry.Clear();
+        }
+
         IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
     }
 }

@@ -15,5 +15,6 @@ namespace CoE.em8.Core.Registry
         void Register(TItem item);
         void RegisterRange(params TItem[] items);
         bool TryGet(TAlias alias, out TItem item);
+        void Clear();
     }
 }
