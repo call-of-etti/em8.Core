@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace CoE.em8.Core.Numeric
@@ -138,6 +139,17 @@ namespace CoE.em8.Core.Numeric
                 ? new byte[] { (dynamic)input }
                 : BitConverter.GetBytes((dynamic)input);
 
+        public static byte[] ByteSafeBitConverterGetBytes<T>(T[] input) where T : struct
+        {
+            List<byte> output = new List<byte>();
+            foreach (T i in input)
+            {
+                output.AddRange(Numeric.ByteSafeBitConverterGetBytes<T>(i));
+            }
+            return output.ToArray();
+        }
+
+
         public static T Cast<T>(dynamic inp)
         {
             return (T)inp;
@@ -192,6 +204,61 @@ namespace CoE.em8.Core.Numeric
                 throw new NotSignedIntegerException(typeof(T).FullName + " is not an signed Integer Type");
             }
         }
+
+
+
+
+
+        public static T BuildIntegerType<T>(byte[] Binary) where T : struct
+        {
+            // Size of T in Bytes
+            int tSize = SizeOf<T>();
+            if(Binary.Length != tSize)
+            {
+                throw new ArgumentException("The length of the Binary data does not fit the size of the DataType " + typeof(T).Name);
+            }
+
+            T conv = default(T);
+            for (int i = 0; i < tSize; i++)
+            {
+                conv = Numeric.ShiftLeft<T>(conv, i);
+                conv = Numeric.Add<T>(conv, Binary[i]);
+            }
+            return conv;
+        }
+
+
+        public static T[] BuildIntegerTypeArray<T>(byte[] Binary) where T : struct
+        {
+            int tSize = SizeOf<T>();
+
+            List<T> output = new List<T>();
+            for(int i = 0; i < Binary.Length / tSize; i++)
+            {
+                byte[] part = new byte[tSize];
+                Array.ConstrainedCopy(Binary, i * tSize, part, 0, tSize);
+
+                // Create generic Type from Bytes
+                output.Add(BuildIntegerType<T>(part));
+            }
+
+            return output.ToArray();
+        }
+
+
+
+
+
+
+        public static int SizeOf<T>() where T : struct
+        {
+            return Marshal.SizeOf(default(T));
+        }
+
+
+
+
+
 
 
 
